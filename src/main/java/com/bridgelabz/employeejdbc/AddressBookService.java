@@ -59,4 +59,22 @@ public class AddressBookService
 		ResultSet queries = getQuerries(query);
 		return printSet(queries);
 	}
+
+	public int getCityData(String city )throws SQLException {
+		String query = String.format("select a.city,count(*) from address a,person_details p where p.person_id = a.person_id and city = '%s';",city);
+		ResultSet queries = getQuerries(query);
+		while(queries.next()) {
+			return queries.getInt("count(*)");
+		}
+		return 0;
+	}
+
+	public int getStateData(String state) throws SQLException {
+		String query = String.format("select a.state,count(*) from address a,person_details p where p.person_id = a.person_id and state = '%s';",state);
+		ResultSet queries = getQuerries(query);
+		while(queries.next()) {
+			return queries.getInt("count(*)");
+		}
+		return 0;
+	}
 }

@@ -32,4 +32,13 @@ public void ifData_WhenGivenDate_ShouldReturnSize() throws SQLException {
 	Assert.assertEquals(6, res);
 
 }
+
+@Test
+public void ifData_WhenGivenCityOrState_ShouldReturnCount() throws SQLException {
+	addressBookService = new AddressBookService();
+	int res = addressBookService.getCityData("Silvassa");
+	Assert.assertEquals(3, res);
+	res = addressBookService.getStateData("Maharashtra");
+	Assert.assertEquals(3, res);
+}
 }
