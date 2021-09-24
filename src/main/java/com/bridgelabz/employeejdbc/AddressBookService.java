@@ -2,13 +2,14 @@ package com.bridgelabz.employeejdbc;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class AddressBookService 
 {
-	public AddressBookJdbc addressBookJdbc;
+public AddressBookJdbc addressBookJdbc;
 	
 	public int getQuery() throws SQLException {
 		String query = "select p.firstname,p.lastname,p.phonenumber,p.email,a.residence_address,a.city,a.state,a.country,a.zip,r.type\r\n" + 
@@ -76,5 +77,27 @@ public class AddressBookService
 			return queries.getInt("count(*)");
 		}
 		return 0;
+	}
+
+	public boolean createData(String firstName, String lastName, long phoneNumber, String email, Date date) throws SQLException {
+		String query = "insert into person_details(firstname,lastname,phonenumber,email,date_added) values (?,?,?,?,?);";
+		addressBookJdbc = AddressBookJdbc.getInstance();
+		Connection connection = addressBookJdbc.dbConnect();
+		PreparedStatement preparedStmt = connection.prepareStatement(query);
+	    preparedStmt.setString (1, firstName);
+	    preparedStmt.setString (2, lastName);
+	    preparedStmt.setLong(3, phoneNumber);
+	    preparedStmt.setString(4, email);
+	    preparedStmt.setDate    (5, date);
+	    preparedStmt.execute();
+	    preparedStmt = connection.prepareStatement("set @autoid := 0;");
+	    preparedStmt.execute();
+	    preparedStmt = connection.prepareStatement("update person_details set person_id = (@autoid := @autoid +1);");
+	    preparedStmt.execute();
+	    ResultSet queries = getQuerries(String.format("Select firstname,lastname from person_details where firstname = '%s' and lastname = '%s';",firstName,lastName));
+		while(queries.next()) {
+			if (queries.getString("lastname").equals(lastName)) return true;
+		}
+		return false;
 	}
 }
